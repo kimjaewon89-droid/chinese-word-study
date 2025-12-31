@@ -228,7 +228,6 @@ for line in data.strip().splitlines():
 TOTAL_WORDS = len(words)
 TOTAL_WINDOWS = (TOTAL_WORDS - 1) // WINDOW_SIZE + 1
 
-
 # ====== 세션 상태 초기화 ======
 if "window_index" not in st.session_state:
     st.session_state.window_index = 0
@@ -236,12 +235,12 @@ if "window_index" not in st.session_state:
     st.session_state.unknown = []
     st.session_state.show_answer = False
 
-# 현재 윈도우
+# ====== 현재 윈도우 ======
 start = st.session_state.window_index * WINDOW_SIZE
 end = start + WINDOW_SIZE
 current_window = words[start:end]
 
-# unknown 초기화
+# unknown 초기화 + 랜덤
 if not st.session_state.unknown:
     st.session_state.unknown = current_window.copy()
     random.shuffle(st.session_state.unknown)
@@ -264,14 +263,16 @@ st.markdown(
 st.divider()
 
 # ====== 단어 표시 ======
+# ✅ 먼저 '뜻'을 보여줌
 st.markdown(
-    f"<h1 style='text-align:center'>{current_word['pinyin']}</h1>",
+    f"<h1 style='text-align:center'>{current_word['meaning']}</h1>",
     unsafe_allow_html=True
 )
 
+# ✅ 정답 보기 시 병음 + 성조
 if st.session_state.show_answer:
     st.markdown(
-        f"<h3 style='text-align:center'>{current_word['number']} - {current_word['meaning']}</h3>",
+        f"<h3 style='text-align:center'>{current_word['pinyin']} ({current_word['number']})</h3>",
         unsafe_allow_html=True
     )
 
@@ -289,6 +290,7 @@ with col2:
         st.session_state.show_answer = False
         st.session_state.unknown.pop(st.session_state.word_index)
 
+        # 윈도우 종료
         if not st.session_state.unknown:
             st.session_state.window_index += 1
             if st.session_state.window_index * WINDOW_SIZE >= TOTAL_WORDS:
@@ -296,9 +298,9 @@ with col2:
                 st.stop()
 
             st.session_state.unknown = words[
-                                       st.session_state.window_index * WINDOW_SIZE:
-                                       (st.session_state.window_index + 1) * WINDOW_SIZE
-                                       ].copy()
+                st.session_state.window_index * WINDOW_SIZE:
+                (st.session_state.window_index + 1) * WINDOW_SIZE
+            ].copy()
             random.shuffle(st.session_state.unknown)
 
         st.session_state.word_index = 0
@@ -307,5 +309,7 @@ with col2:
 with col3:
     if st.button("몰라요"):
         st.session_state.show_answer = False
-        st.session_state.word_index = (st.session_state.word_index + 1) % len(st.session_state.unknown)
+        st.session_state.word_index = (
+            st.session_state.word_index + 1
+        ) % len(st.session_state.unknown)
         st.rerun()
