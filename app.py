@@ -2,6 +2,7 @@ import streamlit as st
 import random
 
 st.write("Streamlit app loaded")
+
 # ====== 설정 ======
 WINDOW_SIZE = 10
 # ==================
