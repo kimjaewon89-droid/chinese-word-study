@@ -216,6 +216,7 @@ data = '''
 44 - zou cai - 요리하다
 '''
 
+
 # ====== 데이터 파싱 ======
 words = []
 for line in data.strip().splitlines():
