@@ -1,8 +1,11 @@
 import streamlit as st
 import os
-
-# --- 1. 페이지 기본 설정 ---
-st.set_page_config(page_title="정원이 성장 대시보드", page_icon="👶", layout="wide")
+# app.py 최상단에 위치해야 합니다.
+st.set_page_config(
+    page_title="정원이 성장 대시보드",
+    page_icon="images/main_profile.jpg", # 혹은 저장된 이미지 경로 "images/favicon.png"
+    layout="wide"
+)
 
 st.title("👶 정원이의 성장 갤러리")
 st.write("---")
