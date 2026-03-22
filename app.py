@@ -56,7 +56,7 @@ st.subheader("📸 사진 추가하기 (가족 전용)")
 SECRET_PASSWORD = "정원이천사" # 원하는 비밀번호로 바꿔주세요
 
 # 비밀번호 입력창 (입력 시 *** 로 가려짐)
-upload_pwd = st.text_input("업로드 비밀번호를 입력하세요:", type="password")
+upload_pwd = st.text_input("업로드 비밀번호를 입력하세요:", type="0509")
 
 # 비밀번호가 맞을 때만 업로드 기능이 화면에 나타남
 if upload_pwd == SECRET_PASSWORD:
