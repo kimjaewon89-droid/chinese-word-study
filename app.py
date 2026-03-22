@@ -1,42 +1,78 @@
 import streamlit as st
 import os
 
-# --- (기존 페이지 설정 및 타이틀 코드는 그대로 유지) ---
+# --- 1. 페이지 기본 설정 ---
+st.set_page_config(page_title="정원이 성장 대시보드", page_icon="👶", layout="wide")
 
-# --- 🔒 비밀번호 및 업로드 영역 ---
+st.title("👶 정원이의 성장 갤러리")
 st.write("---")
-st.subheader("📸 정원이 사진 올리기 (가족 전용)")
 
-# 1. 미리 설정해 둘 비밀번호 (원하는 비밀번호로 변경하세요)
-SECRET_PASSWORD = "정원이천사" 
+# --- 2. 누구나 볼 수 있는 갤러리 영역 ---
+IMAGE_DIR = "images"
+VALID_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.webp')
+PROFILE_KEYWORD = "main_profile"
 
-# 2. 비밀번호 입력창 (글자가 가려지도록 type="password" 설정)
-upload_pwd = st.text_input("0509", type="password")
+# 사진을 띄우는 로직
+if os.path.exists(IMAGE_DIR):
+    all_files = os.listdir(IMAGE_DIR)
+    image_files = [f for f in all_files if f.lower().endswith(VALID_EXTENSIONS)]
 
-# 3. 비밀번호가 맞을 때만 업로드 창 띄우기
+    if not image_files:
+        st.info("📷 아직 사진이 없습니다. 정원이 사진을 올려주세요!")
+    else:
+        profile_file = None
+        other_files = []
+
+        # 프로필 사진과 일반 사진 분류
+        for f in image_files:
+            if PROFILE_KEYWORD in os.path.splitext(f)[0]:
+                profile_file = f
+            else:
+                other_files.append(f)
+
+        other_files.sort() # 일반 사진은 이름순 정렬
+        final_ordered_files = []
+        if profile_file:
+            final_ordered_files.append(profile_file)
+        final_ordered_files.extend(other_files)
+
+        # 3열로 사진 예쁘게 배치
+        cols = st.columns(3) 
+        for idx, img_file in enumerate(final_ordered_files):
+            with cols[idx % 3]:
+                img_path = os.path.join(IMAGE_DIR, img_file)
+                caption_text = os.path.splitext(img_file)[0]
+                
+                if PROFILE_KEYWORD in caption_text:
+                    caption_text = "💖 우리 집 주인공 💖"
+                
+                st.image(img_path, caption=caption_text, use_column_width=True)
+                st.write("")
+
+# --- 3. 가족 전용 사진 업로드 영역 (비밀번호 보호) ---
+st.write("---")
+st.subheader("📸 사진 추가하기 (가족 전용)")
+
+SECRET_PASSWORD = "정원이천사" # 원하는 비밀번호로 바꿔주세요
+
+# 비밀번호 입력창 (입력 시 *** 로 가려짐)
+upload_pwd = st.text_input("업로드 비밀번호를 입력하세요:", type="password")
+
+# 비밀번호가 맞을 때만 업로드 기능이 화면에 나타남
 if upload_pwd == SECRET_PASSWORD:
-    st.success("인증 완료! 사진을 업로드할 수 있습니다.")
-    
-    # 파일 업로더 활성화
     uploaded_file = st.file_uploader("정원이 사진 선택 (jpg, png)", type=['png', 'jpg', 'jpeg'])
     
     if uploaded_file is not None:
-        # 업로드 버튼 만들기
-        if st.button("갤러리에 사진 추가하기"):
-            # 저장할 폴더가 없으면 에러가 나지 않게 확인
-            if not os.path.exists("images"):
-                os.makedirs("images")
+        if st.button("갤러리에 올리기"):
+            if not os.path.exists(IMAGE_DIR):
+                os.makedirs(IMAGE_DIR)
                 
-            # 사진이 저장될 최종 경로 생성 (예: images/baby_photo.jpg)
-            save_path = os.path.join("images", uploaded_file.name)
+            save_path = os.path.join(IMAGE_DIR, uploaded_file.name)
             
-            # 파이썬으로 파일 저장하기
             with open(save_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
             
-            st.success(f"'{uploaded_file.name}' 사진이 성공적으로 저장되었습니다! 화면을 새로고침 해주세요.")
+            st.success("사진이 성공적으로 올라갔습니다! 키보드의 'F5'를 누르거나 화면을 새로고침 해주세요.")
             
 elif upload_pwd != "":
-    st.error("비밀번호가 일치하지 않습니다.")
-
-# --- (이 아래부터는 기존의 갤러리 화면 표시 코드를 배치하시면 됩니다) ---
+    st.error("비밀번호가 틀렸습니다. 다시 확인해주세요.")
