@@ -63,7 +63,7 @@ else:
 
 # --- 3. 가족 전용 사진 업로드 영역 (설명 입력 추가) ---
 st.write("---")
-st.subheader("📸 사진 추가하기 (가족 전용)")
+st.subheader("📸 사진 추가하기 (엄빠)")
 
 SECRET_PASSWORD = "0509" # 원하는 비밀번호로 유지
 
